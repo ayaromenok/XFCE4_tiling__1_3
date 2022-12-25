@@ -1,0 +1,194 @@
+diff --git a/src/client.c b/src/client.c
+index 12c314a5c..f77f0a4ae 100644
+--- a/src/client.c
++++ b/src/client.c
+@@ -3349,6 +3349,73 @@ clientNewTileSize (Client *c, XWindowChanges *wc, GdkRectangle *rect, tilePositi
+             wc->width = full.width - full.width / 2 - frameExtentLeft (c) - frameExtentRight (c);
+             wc->height = full.height / 2 - frameExtentTop (c) - frameExtentBottom (c);
+             break;
++        case TILE_CENTER_3:
++            wc->x = full.x + full.width / 3 + frameExtentLeft (c);
++            wc->y = full.y + frameExtentTop (c);
++            wc->width = full.width / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_LEFT_3:
++            wc->x = full.x + frameExtentLeft (c);
++            wc->y = full.y + frameExtentTop (c);
++            wc->width = full.width / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_RIGHT_3:
++            wc->x = full.x + full.width * 2 / 3 + frameExtentLeft (c);
++            wc->y = full.y + frameExtentTop (c);
++            wc->width = full.width / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_LEFT_2_3:
++            wc->x = full.x + frameExtentLeft (c);
++            wc->y = full.y + frameExtentTop (c);
++            wc->width = full.width * 2 / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_RIGHT_2_3:
++            wc->x = full.x + full.width / 3 + frameExtentLeft (c);
++            wc->y = full.y + frameExtentTop (c);
++            wc->width = full.width - full.width  / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_DOWN_CENTER_3:
++            wc->x = full.x + full.width / 3 + frameExtentLeft (c);
++            wc->y = full.y + full.height / 2 + frameExtentTop (c);
++            wc->width = full.width  / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height - full.height / 2 - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_DOWN_LEFT_3:
++            wc->x = full.x + frameExtentLeft (c);
++            wc->y = full.y + full.height / 2 + frameExtentTop (c);
++            wc->width = full.width / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height - full.height / 2 - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_DOWN_RIGHT_3:
++            wc->x = full.x + full.width * 2 / 3 + frameExtentLeft (c);
++            wc->y = full.y + full.height / 2 + frameExtentTop (c);
++            wc->width = full.width / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height - full.height / 2 - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_UP_CENTER_3:
++            wc->x = full.x + full.width / 3 + frameExtentLeft (c);
++            wc->y = full.y + frameExtentTop (c);
++            wc->width = full.width / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height / 2 - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_UP_LEFT_3:
++            wc->x = full.x + frameExtentLeft (c);
++            wc->y = full.y + frameExtentTop (c);
++            wc->width = full.width / 3 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height / 2 - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++        case TILE_UP_RIGHT_3:
++            wc->x = full.x + full.width * 2 / 3 + frameExtentLeft (c);
++            wc->y = full.y + frameExtentTop (c);
++            wc->width = full.width - full.width / 2 - frameExtentLeft (c) - frameExtentRight (c);
++            wc->height = full.height / 2 - frameExtentTop (c) - frameExtentBottom (c);
++            break;
++
+         default:
+             break;
+     }
+diff --git a/src/client.h b/src/client.h
+index d7dedae45..0cdd0154e 100644
+--- a/src/client.h
++++ b/src/client.h
+@@ -266,7 +266,18 @@ typedef enum
+     TILE_DOWN_LEFT,
+     TILE_DOWN_RIGHT,
+     TILE_UP_LEFT,
+-    TILE_UP_RIGHT
++    TILE_UP_RIGHT,
++    TILE_CENTER_3,
++    TILE_LEFT_3,
++    TILE_RIGHT_3,
++    TILE_LEFT_2_3,
++    TILE_RIGHT_2_3,
++    TILE_DOWN_CENTER_3,
++    TILE_DOWN_LEFT_3,
++    TILE_DOWN_RIGHT_3,
++    TILE_UP_CENTER_3,
++    TILE_UP_LEFT_3,
++    TILE_UP_RIGHT_3
+ }
+ tilePositionType;
+ 
+diff --git a/src/events.c b/src/events.c
+index 8b9e1b8be..ed87999f3 100644
+--- a/src/events.c
++++ b/src/events.c
+@@ -459,8 +459,43 @@ handleKeyPress (DisplayInfo *display_info, XfwmEventKey *event)
+             case KEY_TILE_UP_RIGHT:
+                 clientToggleTile (c, TILE_UP_RIGHT);
+                 break;
++            case KEY_TILE_CENTER_3:
++                clientToggleTile (c, TILE_CENTER_3);
++                break;
++            case KEY_TILE_LEFT_3:
++                clientToggleTile (c, TILE_LEFT_3);
++                break;
++            case KEY_TILE_RIGHT_3:
++                clientToggleTile (c, TILE_RIGHT_3);
++                break;
++            case KEY_TILE_LEFT_2_3:
++                clientToggleTile (c, TILE_LEFT_2_3);
++                break;
++            case KEY_TILE_RIGHT_2_3:
++                clientToggleTile (c, TILE_RIGHT_2_3);
++                break;
++            case KEY_TILE_UP_CENTER_3:
++                clientToggleTile (c, TILE_UP_CENTER_3);
++                break;
++            case KEY_TILE_UP_LEFT_3:
++                clientToggleTile (c, TILE_UP_LEFT_3);
++                break;
++            case KEY_TILE_UP_RIGHT_3:
++                clientToggleTile (c, TILE_UP_RIGHT_3);
++                break;
++            case KEY_TILE_DOWN_CENTER_3:
++                clientToggleTile (c, TILE_DOWN_CENTER_3);
++                break;
++            case KEY_TILE_DOWN_LEFT_3:
++                clientToggleTile (c, TILE_DOWN_LEFT_3);
++                break;
++            case KEY_TILE_DOWN_RIGHT_3:
++                clientToggleTile (c, TILE_DOWN_RIGHT_3);
++                break;
++
+             default:
+                 break;
++
+         }
+     }
+     else
+diff --git a/src/settings.c b/src/settings.c
+index 8fa35cde5..1f22e9fc0 100644
+--- a/src/settings.c
++++ b/src/settings.c
+@@ -617,6 +617,17 @@ loadKeyBindings (ScreenInfo *screen_info)
+     parseShortcut (screen_info, KEY_TOGGLE_ABOVE, "above_key", shortcuts);
+     parseShortcut (screen_info, KEY_TOGGLE_FULLSCREEN, "fullscreen_key", shortcuts);
+     parseShortcut (screen_info, KEY_UP_WORKSPACE, "up_workspace_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_CENTER_3, "tile_center_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_LEFT_3, "tile_left_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_RIGHT_3, "tile_right_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_LEFT_2_3, "tile_left_2_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_RIGHT_2_3, "tile_right_2_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_DOWN_CENTER_3, "tile_down_center_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_DOWN_LEFT_3, "tile_down_left_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_DOWN_RIGHT_3, "tile_down_right_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_UP_CENTER_3, "tile_up_center_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_UP_LEFT_3, "tile_up_left_3_key", shortcuts);
++    parseShortcut (screen_info, KEY_TILE_UP_RIGHT_3, "tile_up_right_3_key", shortcuts);
+ 
+     for (i = 0; i < 12; i++)
+     {
+diff --git a/src/settings.h b/src/settings.h
+index 612ee2e8a..2245f4010 100644
+--- a/src/settings.h
++++ b/src/settings.h
+@@ -135,6 +135,17 @@ enum
+     KEY_WORKSPACE_10,
+     KEY_WORKSPACE_11,
+     KEY_WORKSPACE_12,
++    KEY_TILE_CENTER_3,
++    KEY_TILE_LEFT_3,
++    KEY_TILE_RIGHT_3,
++    KEY_TILE_LEFT_2_3,
++    KEY_TILE_RIGHT_2_3,
++    KEY_TILE_UP_CENTER_3,
++    KEY_TILE_UP_LEFT_3,
++    KEY_TILE_UP_RIGHT_3,
++    KEY_TILE_DOWN_CENTER_3,
++    KEY_TILE_DOWN_LEFT_3,
++    KEY_TILE_DOWN_RIGHT_3,
+     KEY_COUNT
+ };
+ 

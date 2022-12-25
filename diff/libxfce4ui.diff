@@ -1,0 +1,23 @@
+diff --git a/libxfce4kbd-private/xfce-shortcuts-xfwm4.c b/libxfce4kbd-private/xfce-shortcuts-xfwm4.c
+index 0e13d48..3aa39b5 100644
+--- a/libxfce4kbd-private/xfce-shortcuts-xfwm4.c
++++ b/libxfce4kbd-private/xfce-shortcuts-xfwm4.c
+@@ -113,6 +113,18 @@ const ShortcutTemplate xfwm4_shortcut_values[] = {
+   { N_("Add adjacent workspace"), "add_adjacent_workspace_key" },
+   { N_("Delete last workspace"), "del_workspace_key" },
+   { N_("Delete active workspace"), "del_active_workspace_key" },
++  { N_("Tile window to the center 3"), "tile_center_3_key" },
++  { N_("Tile window to the left 3"), "tile_left_3_key" },
++  { N_("Tile window to the right 3"), "tile_right_3_key" },
++  { N_("Tile window to the left 2/3"), "tile_left_2_3_key" },
++  { N_("Tile window to the right 2/3"), "tile_right_2_3_key" },
++  { N_("Tile window to the top-center 3"), "tile_up_center_3_key" },
++  { N_("Tile window to the top-left 3"), "tile_up_left_3_key" },
++  { N_("Tile window to the top-right 3"), "tile_up_right_3_key" },
++  { N_("Tile window to the bottom-center 3"), "tile_down_center_3_key" },
++  { N_("Tile window to the bottom-left 3"), "tile_down_left_3_key" },
++  { N_("Tile window to the bottom-right 3"), "tile_down_right_3_key" },
++
+   { NULL, NULL }
+ };
+ 
